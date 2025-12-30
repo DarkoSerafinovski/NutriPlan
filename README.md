@@ -29,7 +29,7 @@ NutriPlan is a React-based web application designed to streamline the meal plann
 ## Installation
 
 1. Clone the repository:
-   git clone https://github.com/DarkoSerafinovski/nutriplan.git
+   git clone https://github.com/DarkoSerafinovski/NutriPlan.git
 
 2. Install dependencies:
    npm install
