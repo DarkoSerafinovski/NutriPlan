@@ -14,6 +14,8 @@ import ShoppingLists from "./pages/ShoppingLists";
 import ShoppingListDetails from "./pages/ShoppingListDetails";
 import EditList from "./pages/EditList.jsx";
 
+console.log("Supabase URL:", process.env.REACT_APP_SUPABASE_URL);
+
 function App() {
   return (
     <Router>

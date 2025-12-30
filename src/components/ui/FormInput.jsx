@@ -7,12 +7,13 @@ const FormInput = ({
   placeholder,
   required = false,
   className = "",
+  classNameLabel = "font-black text-gray-700 uppercase ml-1",
   icon,
 }) => {
   return (
     <div className={`space-y-2 ${className}`}>
       {label && (
-        <label className="text-sm font-black text-gray-700 uppercase ml-1">
+        <label className={`text-sm ${classNameLabel}`}>
           {label} {required && <span className="text-red-500">*</span>}
         </label>
       )}

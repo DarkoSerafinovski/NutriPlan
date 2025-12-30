@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
+import { supabase } from "../../supabaseClient";
 
 const menus = {
   admin: [
@@ -26,9 +27,18 @@ export default function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
   const role = sessionStorage.getItem("userRole") || "guest";
 
-  const handleLogout = () => {
-    sessionStorage.clear();
-    navigate("/");
+  const handleLogout = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        alert("Error on logout: " + error.message);
+      }
+    } catch (err) {
+      alert("Unexpected error: " + err);
+    } finally {
+      sessionStorage.clear();
+      navigate("/");
+    }
   };
 
   const activeStyle =
