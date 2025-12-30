@@ -1,70 +1,45 @@
-# Getting Started with Create React App
+# NutriPlan - Meal Planner and Grocery Assistant
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+NutriPlan is a React-based web application designed to streamline the meal planning process and automate grocery list management. The application allows users to view meal plans, customize their shopping lists, and export them for offline use.
 
-## Available Scripts
+## Features
 
-In the project directory, you can run:
+- **Interactive Shopping List**: Users can track their shopping progress with a real-time progress bar and checkable items.
+- **Dynamic List Management**: A custom search and dropdown system allows for adding new ingredients, adjusting quantities, and removing items.
+- **PDF Generation**: Integration with jsPDF enables users to export their customized shopping lists into a clean, printable PDF format.
+- **Reusable Component Architecture**: Built using atomic design principles with a focus on reusable UI components and custom React hooks.
+- **Responsive Design**: Optimized for various screen sizes, ensuring usability on both mobile and desktop devices.
 
-### `npm start`
+## Tech Stack
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- **Frontend**: React (Vite)
+- **Styling**: Tailwind CSS
+- **Routing**: React Router DOM
+- **PDF Export**: jsPDF, jspdf-autotable
+- **State Management**: React Hooks (useState, useParams, custom hooks)
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Project Structure
 
-### `npm test`
+- `src/components/ui`: Generic and reusable UI components.
+- `src/hooks`: Custom React hooks for business logic (e.g., useShoppingList).
+- `src/utils`: Helper functions and third-party integrations (e.g., PDF generation logic).
+- `src/pages`: Main application views and page layouts.
+- `src/data`: Mock data for initial development and testing.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Installation
 
-### `npm run build`
+1. Clone the repository:
+   git clone https://github.com/DarkoSerafinovski/nutriplan.git
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+2. Install dependencies:
+   npm install
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+3. Run the development server:
+   npm run dev
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Future Roadmap
 
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- **Backend Integration**: Implementation of Supabase for user authentication and persistent data storage.
+- **External API Integration**: Fetching nutritional data and ingredients from public food databases.
+- **Localization**: Adding support for multiple languages including Serbian.
+- **User Profiles**: Personalized meal planning and history tracking for registered users.
