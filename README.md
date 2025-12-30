@@ -43,3 +43,6 @@ NutriPlan is a React-based web application designed to streamline the meal plann
 - **External API Integration**: Fetching nutritional data and ingredients from public food databases.
 - **Localization**: Adding support for multiple languages including Serbian.
 - **User Profiles**: Personalized meal planning and history tracking for registered users.
+
+## Live Demo
+🔗 [View App Live](https://nutri-plan-taupe.vercel.app/)
