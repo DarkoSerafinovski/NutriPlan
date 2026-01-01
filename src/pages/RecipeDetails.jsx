@@ -29,7 +29,7 @@ export default function RecipeDetails() {
       <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
         <h2 className="text-2xl font-bold text-gray-800">Recipe not found!</h2>
         <button
-          onClick={() => navigate("/recipes")}
+          onClick={() => navigate("/")}
           className="mt-4 text-green-600 font-semibold hover:underline"
         >
           ← Back to browse
@@ -79,14 +79,12 @@ export default function RecipeDetails() {
             <PreparationSteps instructions={recipe.instructions} />
           </div>
 
-          {/* 4. ACTIONS FOOTER */}
-          <RecipeActions
-            role={role}
+          {/* <RecipeActions
             isFavorite={recipe.isFavorite}
             onFavoriteToggle={handleFavorite}
             onEdit={handleEdit}
             onDelete={handleDelete}
-          />
+          />*/}
         </div>
       </div>
     </div>

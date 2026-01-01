@@ -1,5 +1,6 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import AllRecipes from "./pages/AllRecipes";
@@ -14,36 +15,36 @@ import ShoppingLists from "./pages/ShoppingLists";
 import ShoppingListDetails from "./pages/ShoppingListDetails";
 import EditList from "./pages/EditList.jsx";
 
-console.log("Supabase URL:", process.env.REACT_APP_SUPABASE_URL);
-
 function App() {
   return (
     <Router>
       <div className="App">
         <Routes>
-          <Route path="/" element={<Login />} />
+          <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/recipes" element={<AllRecipes />} />
+          <Route path="/" element={<AllRecipes />} />
           <Route path="/recipes/:id" element={<RecipeDetails />} />
-          <Route path="/add-recipe" element={<RecipeForm />} />
-          <Route path="/edit-recipe/:id" element={<RecipeForm />} />
           <Route path="/ingredients" element={<IngredientsList />} />
-          <Route path="/add-ingredient" element={<IngredientForm />} />
-          <Route path="/edit-ingredient/:id" element={<IngredientForm />} />
-          <Route
-            path="/favorites"
-            element={<AllRecipes onlyFavorites={true} />}
-          />
-          <Route path="/plans" element={<MyPlans />} />
-          <Route path="/plan/:id" element={<PlanDetails />} />
-          <Route path="/create-plan" element={<CreatePlan />} />
-          <Route path="/shopping-lists" element={<ShoppingLists />} />
 
-          <Route
-            path="/shopping-list/:planId"
-            element={<ShoppingListDetails />}
-          />
-          <Route path="/edit-list/:planId" element={<EditList />} />
+          <Route element={<ProtectedRoute />}>
+            <Route path="/add-recipe" element={<RecipeForm />} />
+            <Route path="/edit-recipe/:id" element={<RecipeForm />} />
+            <Route path="/add-ingredient" element={<IngredientForm />} />
+            <Route path="/edit-ingredient/:id" element={<IngredientForm />} />
+            <Route
+              path="/favorites"
+              element={<AllRecipes onlyFavorites={true} />}
+            />
+            <Route path="/plans" element={<MyPlans />} />
+            <Route path="/plan/:id" element={<PlanDetails />} />
+            <Route path="/create-plan" element={<CreatePlan />} />
+            <Route path="/shopping-lists" element={<ShoppingLists />} />{" "}
+            <Route
+              path="/shopping-list/:planId"
+              element={<ShoppingListDetails />}
+            />
+            <Route path="/edit-list/:planId" element={<EditList />} />
+          </Route>
         </Routes>
       </div>
     </Router>

@@ -36,7 +36,7 @@ export default function Register() {
       setLoading(false);
     } else {
       alert("Registration successful! You can now log in.");
-      navigate("/");
+      navigate("/login");
     }
   };
 
@@ -84,7 +84,7 @@ export default function Register() {
 
             <FormInput
               label="Confirm Password"
-              name="password"
+              name="confirmPassword"
               type="password"
               placeholder="Repeat your password"
               value={confirmPassword}
@@ -109,7 +109,7 @@ export default function Register() {
           </div>
 
           <button
-            onClick={() => navigate("/")}
+            onClick={() => navigate("/login")}
             className="w-full bg-white border border-gray-300 text-gray-700 font-medium py-3 rounded-lg hover:bg-gray-50 transition"
           >
             Back to Login

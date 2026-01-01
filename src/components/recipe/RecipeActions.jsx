@@ -1,23 +1,9 @@
 import React from "react";
-
-const RecipeActions = ({
-  role,
-  isFavorite,
-  onFavoriteToggle,
-  onEdit,
-  onDelete,
-}) => {
+/*
+const RecipeActions = ({ isFavorite, onFavoriteToggle, onEdit, onDelete }) => {
   return (
     <div className="p-8 bg-gray-900 flex flex-wrap gap-4 items-center justify-between rounded-b-[2rem]">
-      {/* Status indikator */}
-      <div className="text-white">
-        <p className="text-xs uppercase font-black text-gray-400 tracking-wider">
-          Status
-        </p>
-        <p className="text-sm font-bold">{role.toUpperCase()} View</p>
-      </div>
 
-      {/* Dugmići za akcije */}
       <div className="flex gap-3">
         {role === "admin" && (
           <>
@@ -53,4 +39,4 @@ const RecipeActions = ({
   );
 };
 
-export default RecipeActions;
+export default RecipeActions;*/

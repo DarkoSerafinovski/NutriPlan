@@ -25,28 +25,8 @@ export default function Login() {
       setError(authError.message);
       setLoading(false);
     } else {
-      const { data: profile, error: profileError } = await supabase
-        .from("profiles")
-        .select("role")
-        .eq("id", data.user.id)
-        .single();
-
-      if (profileError) {
-        console.log("Error with fetching role: " + profileError.message);
-        setError("Could not fetch user role");
-        setLoading(false);
-      } else {
-        sessionStorage.setItem("userRole", profile.role);
-        sessionStorage.setItem("username", data.user.email);
-        navigate("/recipes");
-      }
+      navigate("/");
     }
-  };
-
-  const handleGuestLogin = () => {
-    sessionStorage.setItem("userRole", "guest");
-    sessionStorage.setItem("username", "Guest");
-    navigate("/recipes");
   };
 
   return (
@@ -112,14 +92,6 @@ export default function Login() {
               className="w-full bg-white border border-gray-300 text-gray-700 font-medium py-3 rounded-lg hover:bg-gray-50 transition"
             >
               Create an Account
-            </button>
-
-            <button
-              type="button"
-              onClick={handleGuestLogin}
-              className="w-full text-green-600 font-medium py-2 hover:underline transition text-sm"
-            >
-              Continue as a Guest
             </button>
           </div>
         </div>
