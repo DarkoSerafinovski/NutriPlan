@@ -1,7 +1,5 @@
 import React from "react";
-import { ingredients } from "../../data/ingredients";
 
-// 1. Komponenta za sastojke
 export const IngredientList = ({ recipeIngredients }) => {
   return (
     <div className="md:col-span-2">
@@ -13,17 +11,18 @@ export const IngredientList = ({ recipeIngredients }) => {
       </h3>
       <ul className="space-y-3">
         {recipeIngredients.map((ing, idx) => {
-          const item = ingredients.find((i) => i.id === ing.ingredientId);
+          const rawUnit = ing?.ingredients?.unit || "";
+          const cleanUnit = rawUnit.replace(/[0-9]/g, "");
           return (
             <li
               key={idx}
               className="flex justify-between items-center p-3 rounded-xl hover:bg-green-50/50 transition-colors border-b border-gray-50 last:border-0 group"
             >
               <span className="text-gray-700 font-medium group-hover:text-green-700 transition-colors">
-                {item?.name}
+                {ing?.ingredients.name}
               </span>
               <span className="bg-gray-100 px-3 py-1 rounded-lg text-sm font-bold text-gray-600 group-hover:bg-green-100 group-hover:text-green-800 transition-colors">
-                {ing.amount} {item?.unit}
+                {ing?.amount} {cleanUnit}
               </span>
             </li>
           );

@@ -1,51 +1,39 @@
-import React, { useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { recipes } from "../data/recipes.js";
-import { ingredients } from "../data/ingredients.js";
-import { calculateNutrition } from "../utils/nutrition.js";
 import Navigation from "../components/layout/Navigation.jsx";
 import NutritionStats from "../components/recipe/NutritionStats.jsx";
 import BackButton from "../components/ui/BackButton.jsx";
+import Loader from "../components/ui/Loader.jsx";
 import {
   IngredientList,
   PreparationSteps,
 } from "../components/recipe/RecipeContext.jsx";
-import RecipeActions from "../components/recipe/RecipeActions.jsx";
+import { useRecipeDetails } from "../hooks/useRecipeDetails.js";
+import EmptyState from "../components/ui/EmptyState.jsx";
 
 export default function RecipeDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const role = sessionStorage.getItem("userRole") || "guest";
 
-  const initialRecipe = recipes.find((r) => r.id.toString() === id);
-  const [recipe, setRecipe] = useState(initialRecipe);
+  const { recipe, loading, nutrition, toggleFavorite, handleDelete, user } =
+    useRecipeDetails(id);
 
-  const nutrition = useMemo(() => {
-    return recipe ? calculateNutrition(recipe, ingredients) : null;
-  }, [recipe]);
+  if (loading)
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader />
+      </div>
+    );
 
   if (!recipe) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
-        <h2 className="text-2xl font-bold text-gray-800">Recipe not found!</h2>
-        <button
-          onClick={() => navigate("/")}
-          className="mt-4 text-green-600 font-semibold hover:underline"
-        >
-          ← Back to browse
-        </button>
-      </div>
+      <EmptyState
+        title="Recipe not found!"
+        message=""
+        actionLabel="← Back to browse"
+        onAction={() => navigate("/")}
+      />
     );
   }
-
-  const handleFavorite = () => {
-    setRecipe((prev) => ({ ...prev, isFavorite: !prev.isFavorite }));
-  };
-
-  const handleEdit = () => navigate(`/edit-recipe/${id}`);
-  const handleDelete = () => {
-    console.log("Delete Recipe");
-  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -53,38 +41,108 @@ export default function RecipeDetails() {
 
       <div className="max-w-5xl mx-auto px-4 py-8">
         <BackButton label="Go Back" className="mb-6" />
+
         <div className="bg-white rounded-[2rem] shadow-xl shadow-gray-200/50 overflow-hidden border border-gray-100">
-          {/* 1. HERO SECTION */}
-          <div className="p-8 md:p-12 border-b border-gray-50">
+          {/* HERO SECTION */}
+          <div className="p-8 md:p-12 border-b border-gray-50 relative">
             <div className="flex flex-wrap items-center gap-3 mb-4">
               <span className="px-4 py-1 bg-green-100 text-green-700 rounded-full text-xs font-black uppercase tracking-widest">
-                {recipe.mealType}
+                {recipe.meal_type}
               </span>
               <span className="text-gray-400">•</span>
               <span className="text-gray-600 font-medium">
-                ⏱️ {recipe.prepTime} mins
+                ⏱️ {recipe.prep_time} mins
               </span>
             </div>
-            <h1 className="text-4xl md:text-5xl font-black text-gray-900 leading-tight">
-              {recipe.title}
-            </h1>
+
+            <div className="flex justify-between items-start gap-4">
+              <h1 className="text-4xl md:text-5xl font-black text-gray-900 leading-tight">
+                {recipe.title}
+              </h1>
+
+              <div className="flex gap-2">
+                {user && user.id === recipe.user_id && (
+                  <>
+                    <button
+                      onClick={() => navigate(`/edit-recipe/${recipe.id}`)}
+                      className="p-4 rounded-2xl bg-gray-50 text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition-all group"
+                      title="Edit Recipe"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth={2}
+                        stroke="currentColor"
+                        className="w-8 h-8 group-hover:rotate-12 transition-transform"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
+                        />
+                      </svg>
+                    </button>
+                    <button
+                      onClick={handleDelete}
+                      className="p-4 rounded-2xl bg-gray-50 text-gray-400 hover:bg-red-50 hover:text-red-600 transition-all"
+                      title="Delete Recipe"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth={2}
+                        stroke="currentColor"
+                        className="w-8 h-8"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-0.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v0.916m7.5 0a48.667 48.667 0 0 0-7.5 0"
+                        />
+                      </svg>
+                    </button>
+                  </>
+                )}
+
+                {/* FAVORITE DUGME */}
+                {user && (
+                  <button
+                    onClick={toggleFavorite}
+                    className={`p-4 rounded-2xl transition-all ${
+                      recipe.isFavorite
+                        ? "bg-red-50 text-red-500"
+                        : "bg-gray-50 text-gray-400 hover:bg-red-50 hover:text-red-300"
+                    }`}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill={recipe.isFavorite ? "currentColor" : "none"}
+                      viewBox="0 0 24 24"
+                      strokeWidth={2}
+                      stroke="currentColor"
+                      className="w-8 h-8"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"
+                      />
+                    </svg>
+                  </button>
+                )}
+              </div>
+            </div>
           </div>
 
-          {/* 2. NUTRITION DASHBOARD */}
+          {/* NUTRITION DASHBOARD */}
           <NutritionStats nutrition={nutrition} variant="large" />
 
-          {/* 3. CONTENT GRID */}
           <div className="p-8 md:p-12 grid md:grid-cols-5 gap-12">
-            <IngredientList recipeIngredients={recipe.ingredients} />
+            <IngredientList recipeIngredients={recipe.recipe_ingredients} />
             <PreparationSteps instructions={recipe.instructions} />
           </div>
-
-          {/* <RecipeActions
-            isFavorite={recipe.isFavorite}
-            onFavoriteToggle={handleFavorite}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-          />*/}
         </div>
       </div>
     </div>

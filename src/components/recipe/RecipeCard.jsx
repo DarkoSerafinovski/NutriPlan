@@ -3,7 +3,13 @@ import { Link } from "react-router-dom";
 import NutritionStats from "./NutritionStats";
 
 const RecipeCard = ({ recipe }) => {
-  const { id, title, mealType, prepTime, nutrition } = recipe;
+  const {
+    id,
+    title,
+    meal_type: mealType,
+    prep_time: prepTime,
+    nutrition,
+  } = recipe;
 
   return (
     <Link

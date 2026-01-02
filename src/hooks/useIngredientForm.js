@@ -1,40 +1,67 @@
 import { useState, useEffect } from "react";
 import { ingredients } from "../data/ingredients.js";
+import { supabase } from "../supabaseClient.js";
 
 const initialFormState = {
   name: "",
-  category: "vegetables",
-  protein: 0,
-  fat: 0,
+  category_id: "",
+  proteins: 0,
+  fats: 0,
   carbs: 0,
   calories: 0,
-  unit: "g",
+  unit: "100g",
 };
 
-export const useIngredientForm = (ingredientId) => {
+export const useIngredientForm = () => {
   const [formData, setFormData] = useState(initialFormState);
 
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(false);
+
   useEffect(() => {
-    if (ingredientId) {
-      const existing = ingredients.find(
-        (ing) => ing.id.toString() === ingredientId
-      );
-      if (existing) {
-        setFormData(existing);
-      }
-    } else {
-      setFormData(initialFormState);
+    async function getCategories() {
+      const { data } = await supabase
+        .from("categories")
+        .select("*")
+        .order("name");
+
+      setCategories(data || []);
     }
-  }, [ingredientId]);
+    getCategories();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    const val = ["proteins", "fats", "carbs", "calories"].includes(name)
-      ? parseFloat(value) || 0
-      : value;
-
-    setFormData((prev) => ({ ...prev, [name]: val }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  return { formData, handleChange, isEditMode: Boolean(ingredientId) };
+  const saveIngredient = async () => {
+    setLoading(true);
+    try {
+      const { data: existing } = await supabase
+        .from("ingredients")
+        .select("name")
+        .ilike("name", formData.name.trim())
+        .maybeSingle();
+
+      if (existing) {
+        alert(`Ingredient ${existing.name} already exists in the library!`);
+        return { success: false };
+      }
+
+      const { error } = await supabase
+        .from("ingredients")
+        .insert([{ ...formData, name: formData.name.trim() }]);
+
+      if (error) throw error;
+      return { success: true };
+    } catch (err) {
+      alert("Error: " + err.message);
+      return { success: false };
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { formData, handleChange, categories, saveIngredient, loading };
 };

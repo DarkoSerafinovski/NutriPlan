@@ -2,17 +2,9 @@ import React from "react";
 import IngredientTableRow from "./IngredientTableRow";
 import EmptyState from "../ui/EmptyState";
 
-const IngredientTable = ({ items, isAdmin, onEdit, onDelete }) => {
+const IngredientTable = ({ items }) => {
   if (items.length === 0) {
-    return (
-      /*<div className="p-20 text-center bg-white rounded-[2.5rem] border border-gray-100 shadow-xl">
-        <p className="text-gray-400 font-medium">
-          No ingredients found matching your search.
-        </p>
-      </div>*/
-
-      <EmptyState message="No ingredients found matching your search." />
-    );
+    return <EmptyState message="No ingredients found matching your search." />;
   }
 
   const headers = [
@@ -41,22 +33,11 @@ const IngredientTable = ({ items, isAdmin, onEdit, onDelete }) => {
                   {h}
                 </th>
               ))}
-              {isAdmin && (
-                <th className="p-6 text-xs font-black uppercase tracking-widest text-gray-400 text-right">
-                  Actions
-                </th>
-              )}
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-50">
             {items.map((ing) => (
-              <IngredientTableRow
-                key={ing.id}
-                ingredient={ing}
-                isAdmin={isAdmin}
-                onEdit={onEdit}
-                onDelete={onDelete}
-              />
+              <IngredientTableRow key={ing.id} ingredient={ing} />
             ))}
           </tbody>
         </table>

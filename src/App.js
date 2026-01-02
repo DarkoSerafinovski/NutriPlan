@@ -6,7 +6,7 @@ import Register from "./pages/Register";
 import AllRecipes from "./pages/AllRecipes";
 import RecipeDetails from "./pages/RecipeDetails";
 import RecipeForm from "./pages/RecipeForm";
-import IngredientsList from "./pages/Ingredients";
+import IngredientsList from "./pages/IngredientsList.jsx";
 import IngredientForm from "./pages/IngredientsForm";
 import MyPlans from "./pages/MyPlans";
 import PlanDetails from "./pages/PlanDetails";

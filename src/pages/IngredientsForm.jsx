@@ -9,12 +9,19 @@ import BackButton from "../components/ui/BackButton";
 export default function IngredientForm() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { formData, handleChange, isEditMode } = useIngredientForm(id);
+  const { formData, handleChange, categories, saveIngredient, loading } =
+    useIngredientForm(id);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Saving Ingredient:", formData);
-    navigate("/ingredients");
+
+    if (!formData.category_id) {
+      alert("Please select a category");
+      return;
+    }
+
+    const result = await saveIngredient();
+    if (result.success) navigate("/ingredients");
   };
 
   return (
@@ -26,10 +33,10 @@ export default function IngredientForm() {
         <div className="bg-white rounded-[2.5rem] shadow-xl border border-gray-100 overflow-hidden">
           <header className="p-8 md:p-12 border-b border-gray-50">
             <h1 className="text-4xl font-black text-gray-900 tracking-tight">
-              {isEditMode ? "Edit Ingredient" : "New Ingredient"}
+              New Ingredient
             </h1>
             <p className="text-gray-500 font-medium">
-              Define nutritional values per 100g/ml.
+              Add a new ingredient to your community library
             </p>
           </header>
 
@@ -45,19 +52,14 @@ export default function IngredientForm() {
               />
               <FormSelect
                 label="Category"
-                name="category"
-                value={formData.category.toLowerCase()}
+                name="category_id"
+                value={formData.category_id}
                 onChange={handleChange}
-                options={[
-                  "vegetable",
-                  "fruit",
-                  "meat",
-                  "other",
-                  "dairy",
-                  "grains",
-                  "nuts",
-                  "fish",
-                ]}
+                options={categories.map((cat) => ({
+                  value: cat.id,
+                  label: cat.name,
+                }))}
+                required
               />
             </div>
 
@@ -66,14 +68,14 @@ export default function IngredientForm() {
                 label="Proteins (g)"
                 name="proteins"
                 type="number"
-                value={formData.protein}
+                value={formData.proteins}
                 onChange={handleChange}
               />
               <FormInput
                 label="Fats (g)"
                 name="fats"
                 type="number"
-                value={formData.fat}
+                value={formData.fats}
                 onChange={handleChange}
               />
               <FormInput
@@ -97,15 +99,25 @@ export default function IngredientForm() {
               name="unit"
               value={formData.unit}
               onChange={handleChange}
-              options={["g", "ml", "pcs", "tbsp"]}
+              options={[
+                { value: "100g", label: "100g" },
+                { value: "100ml", label: "100ml" },
+                { value: "pc", label: "Piece (pc)" },
+              ]}
               className="w-1/2"
             />
 
             <button
               type="submit"
-              className="w-full py-5 bg-green-600 text-white font-black text-xl rounded-2xl hover:bg-green-700 transition-all shadow-lg shadow-green-100"
+              disabled={loading}
+              className={`w-full py-5 text-white font-black text-xl rounded-2xl transition-all shadow-lg 
+                ${
+                  loading
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-green-600 hover:bg-green-700 shadow-green-100"
+                }`}
             >
-              {isEditMode ? "Update Ingredient" : "Add to Library"}
+              {loading ? "Adding..." : "Add to Library"}
             </button>
           </form>
         </div>

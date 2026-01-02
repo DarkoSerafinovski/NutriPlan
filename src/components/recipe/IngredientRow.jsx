@@ -1,41 +1,49 @@
 import React from "react";
-import { ingredients } from "../../data/ingredients.js";
 import FormInput from "../ui/FormInput";
 import FormSelect from "../ui/FormSelect";
 
-const IngredientRow = ({ index, data, onUpdate, onRemove, canRemove }) => {
-  const itemInfo = ingredients.find((ing) => ing.id === data.ingredientId);
+const IngredientRow = ({
+  index,
+  data,
+  ingredientsList,
+  onUpdate,
+  onRemove,
+  canRemove,
+}) => {
+  const itemInfo = ingredientsList.find(
+    (ing) => ing.id === parseInt(data.ingredient_id)
+  );
 
-  const ingredientOptions = ingredients.map((ing) => ({
+  const ingredientOptions = ingredientsList.map((ing) => ({
     value: ing.id,
     label: ing.name,
   }));
 
+  const cleanUnit = itemInfo?.unit ? itemInfo.unit.replace(/[0-9]/g, "") : "";
+
   return (
     <div className="flex gap-3 items-end bg-gray-50 p-3 rounded-2xl border border-gray-100 group transition-all hover:border-green-200">
-      {/* Ingredient Selection - No label passed */}
       <FormSelect
-        value={data.ingredientId}
-        onChange={(e) => onUpdate(index, "ingredientId", e.target.value)}
+        value={data.ingredient_id}
+        onChange={(e) => onUpdate(index, "ingredient_id", e.target.value)}
         options={ingredientOptions}
+        placeholder="Select Ingredient"
         className="flex-1 space-y-0"
       />
 
-      {/* Amount Input with Unit inside */}
       <div className="relative w-32">
         <FormInput
           type="number"
           value={data.amount}
           onChange={(e) => onUpdate(index, "amount", e.target.value)}
           placeholder="0"
-          className="space-y-0"
+          className="space-y-0 text-right pr-10"
         />
         <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400 font-bold pointer-events-none">
-          {itemInfo?.unit}
+          {cleanUnit}
         </span>
       </div>
 
-      {/* Remove Button */}
       <button
         type="button"
         onClick={() => onRemove(index)}

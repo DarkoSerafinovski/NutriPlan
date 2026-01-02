@@ -10,9 +10,9 @@ const NutritionStats = ({ nutrition, variant = "large" }) => {
       unit: "kcal",
       color: "orange",
     },
-    { label: "Protein", value: nutrition.protein, unit: "g", color: "blue" },
+    { label: "Proteins", value: nutrition.proteins, unit: "g", color: "blue" },
     { label: "Carbs", value: nutrition.carbs, unit: "g", color: "purple" },
-    { label: "Fat", value: nutrition.fat, unit: "g", color: "red" },
+    { label: "Fats", value: nutrition.fats, unit: "g", color: "red" },
   ];
 
   const containerClasses =
