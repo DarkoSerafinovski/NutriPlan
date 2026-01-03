@@ -61,7 +61,7 @@ export default function RecipeDetails() {
               </h1>
 
               <div className="flex gap-2">
-                {user && user.id === recipe.user_id && (
+                {user?.id === recipe.user_id && (
                   <>
                     <button
                       onClick={() => navigate(`/edit-recipe/${recipe.id}`)}
@@ -106,7 +106,6 @@ export default function RecipeDetails() {
                   </>
                 )}
 
-                {/* FAVORITE DUGME */}
                 {user && (
                   <button
                     onClick={toggleFavorite}

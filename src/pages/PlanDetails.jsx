@@ -1,46 +1,64 @@
-import React, { useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { mealPlans } from "../data/mealPlans.js";
-import { recipes } from "../data/recipes.js";
+import { supabase } from "../supabaseClient";
 import Navigation from "../components/layout/Navigation.jsx";
 import BackButton from "../components/ui/BackButton.jsx";
 import RecipeCard from "../components/recipe/RecipeCard.jsx";
-import { calculateNutrition } from "../utils/nutrition.js";
-import { ingredients } from "../data/ingredients.js";
 import EmptyState from "../components/ui/EmptyState.jsx";
 
 export default function PlanDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [plan, setPlan] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const plan = useMemo(() => {
-    const foundPlan = mealPlans.find((p) => p.id.toString() === id);
-    if (!foundPlan) return null;
+  useEffect(() => {
+    async function getFullPlanDetails() {
+      setLoading(true);
 
-    const planRecipes = foundPlan.recipeIds
-      .map((rId) => {
-        const r = recipes.find((rec) => rec.id.toString() === rId.toString());
+      const { data, error } = await supabase
+        .from("meal_plans")
+        .select(
+          `
+          *,
+          meal_plan_days (
+            day_number,
+            breakfast:recipes!breakfast_id (*),
+            snack1:recipes!snack1_id (*),
+            lunch:recipes!lunch_id (*),
+            snack2:recipes!snack2_id (*),
+            dinner:recipes!dinner_id (*)
+          )
+        `
+        )
+        .eq("id", id)
+        .single();
 
-        if (!r) {
-          console.warn(`Recipe with ID ${rId} not found in database`);
-          return null;
-        }
+      if (error || !data) {
+        console.error("Error fetching plan:", error);
+        setPlan(null);
+      } else {
+        const sortedDays = data.meal_plan_days.sort(
+          (a, b) => a.day_number - b.day_number
+        );
+        setPlan({ ...data, meal_plan_days: sortedDays });
+      }
+      setLoading(false);
+    }
 
-        return {
-          ...r,
-          nutrition: calculateNutrition(r, ingredients),
-        };
-      })
-      .filter(Boolean);
-
-    return { ...foundPlan, fullRecipes: planRecipes };
+    getFullPlanDetails();
   }, [id]);
+
+  if (loading)
+    return (
+      <div className="text-center py-20 font-bold">Loading plan details...</div>
+    );
 
   if (!plan) {
     return (
       <EmptyState
         title="Plan Not Found"
-        message="We couldn't find the meal plan you're looking for. It might have been deleted."
+        message="We couldn't find the meal plan you're looking for."
         actionLabel="Back to Plans"
         onAction={() => navigate("/plans")}
         icon="📅"
@@ -63,44 +81,55 @@ export default function PlanDetails() {
           </button>
         </div>
 
-        {/* Plan Header Card */}
-
+        {/* Plan Header */}
         <section className="bg-white rounded-[2.5rem] p-8 md:p-12 shadow-xl border border-gray-100 mb-12 flex flex-col md:flex-row justify-between gap-6">
           <div className="max-w-2xl">
             <span className="px-4 py-1 bg-green-50 text-green-700 text-xs font-black uppercase rounded-full">
-              {plan.period}
+              {plan.meal_plan_days.length} Days Plan
             </span>
             <h1 className="text-4xl md:text-5xl font-black text-gray-900 mt-4 mb-4">
-              {plan.planName || plan.naziv_plana}
+              {plan.title}
             </h1>
-            <p className="text-gray-500 font-medium">
-              This plan includes {plan.fullRecipes.length} curated recipes for
-              your fitness goals. Below you can find all the meals and their
-              preparation details.
+            <p className="text-gray-500 font-medium leading-relaxed">
+              {plan.description || "No description provided for this plan."}
             </p>
           </div>
 
           <div className="grid grid-cols-2 gap-4 w-full md:w-auto">
-            <StatCard label="Total Recipes" value={plan.fullRecipes.length} />
-            <StatCard label="Time Est." value="Weekly" />
+            <StatCard label="Days" value={plan.meal_plan_days.length} />
+            <StatCard label="Public" value={plan.is_public ? "Yes" : "No"} />
           </div>
         </section>
 
-        {/* Recipes Grid */}
-        <section>
-          <div className="flex items-center gap-4 mb-8">
-            <h2 className="text-2xl font-black text-gray-900 uppercase tracking-tight">
-              Recipes in this plan
-            </h2>
-            <div className="h-px flex-grow bg-gray-200"></div>
-          </div>
+        <div className="space-y-16">
+          {plan.meal_plan_days.map((day) => (
+            <section key={day.day_number}>
+              <div className="flex items-center gap-4 mb-8">
+                <h2 className="text-2xl font-black text-gray-900 uppercase tracking-tight">
+                  Day {day.day_number}
+                </h2>
+                <div className="h-px flex-grow bg-gray-200"></div>
+              </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {plan.fullRecipes.map((recipe) => (
-              <RecipeCard key={recipe.id} recipe={recipe} />
-            ))}
-          </div>
-        </section>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {day.breakfast && (
+                  <RecipeCard recipe={day.breakfast} label="Breakfast" />
+                )}
+                {day.snack1 && (
+                  <RecipeCard recipe={day.snack1} label="Snack 1" />
+                )}
+                {day.lunch && <RecipeCard recipe={day.lunch} label="Lunch" />}
+
+                {day.snack2 && (
+                  <RecipeCard recipe={day.snack2} label="Snack 2" />
+                )}
+                {day.dinner && (
+                  <RecipeCard recipe={day.dinner} label="Dinner" />
+                )}
+              </div>
+            </section>
+          ))}
+        </div>
       </main>
     </div>
   );

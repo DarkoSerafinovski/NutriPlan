@@ -10,9 +10,7 @@ const IngredientRow = ({
   onRemove,
   canRemove,
 }) => {
-  const itemInfo = ingredientsList.find(
-    (ing) => ing.id === parseInt(data.ingredient_id)
-  );
+  const itemInfo = ingredientsList.find((ing) => ing.id === data.ingredient_id);
 
   const ingredientOptions = ingredientsList.map((ing) => ({
     value: ing.id,

@@ -1,6 +1,6 @@
 import React from "react";
 
-const Loader = () => {
+const Loader = ({ text = "Loading NutriPlan..." }) => {
   return (
     <div className="flex flex-col items-center justify-center space-y-4">
       <div className="relative">
@@ -9,7 +9,7 @@ const Loader = () => {
       </div>
 
       <p className="text-gray-500 font-bold animate-pulse uppercase tracking-widest text-xs">
-        Loading NutriPlan...
+        {text}
       </p>
     </div>
   );

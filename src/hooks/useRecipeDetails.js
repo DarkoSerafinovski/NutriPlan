@@ -53,8 +53,6 @@ export function useRecipeDetails(id) {
   }, [recipe]);
 
   const toggleFavorite = async () => {
-    if (!user || !recipe) return;
-
     const isCurrentlyFavorite = recipe.isFavorite;
     try {
       if (isCurrentlyFavorite) {

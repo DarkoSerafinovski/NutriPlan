@@ -55,6 +55,7 @@ export default function IngredientForm() {
                 name="category_id"
                 value={formData.category_id}
                 onChange={handleChange}
+                placeholder="Select a category"
                 options={categories.map((cat) => ({
                   value: cat.id,
                   label: cat.name,

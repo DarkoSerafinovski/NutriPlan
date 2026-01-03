@@ -14,7 +14,7 @@ export function useIngredients(searchTerm = "") {
         let query = supabase
           .from("ingredients")
           .select(`*, categories(name)`)
-          .order("name", { ascending: true });
+          .order("name");
 
         if (searchTerm.trim() !== "") {
           query = query.ilike("name", `%${searchTerm}%`);
@@ -39,23 +39,5 @@ export function useIngredients(searchTerm = "") {
     return () => clearTimeout(delayDebounceFn);
   }, [searchTerm]);
 
-  // Funkcija za brisanje koju ćemo vratiti iz hook-a
-  const deleteIngredient = async (id) => {
-    try {
-      const { error: dbError } = await supabase
-        .from("ingredients")
-        .delete()
-        .eq("id", id);
-
-      if (dbError) throw dbError;
-
-      setIngredients((prev) => prev.filter((ing) => ing.id !== id));
-      return { success: true };
-    } catch (err) {
-      console.error("Delete error:", err.message);
-      return { success: false, error: err.message };
-    }
-  };
-
-  return { ingredients, loading, error, deleteIngredient };
+  return { ingredients, loading, error };
 }

@@ -16,7 +16,7 @@ export default function Login() {
     setError("");
     setLoading(true);
 
-    const { data, error: authError } = await supabase.auth.signInWithPassword({
+    const { error: authError } = await supabase.auth.signInWithPassword({
       email: email,
       password: password,
     });
@@ -53,7 +53,7 @@ export default function Login() {
               label="Email Address"
               name="email"
               type="email"
-              placeholder="name@example.com"
+              placeholder="Your email adress"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required

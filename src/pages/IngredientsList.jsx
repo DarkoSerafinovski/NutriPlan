@@ -8,7 +8,6 @@ import { usePagination } from "../hooks/usePagination";
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useIngredients } from "../hooks/useIngredients";
-import EmptyState from "../components/ui/EmptyState";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -17,18 +16,10 @@ export default function IngredientsList() {
   const { user } = useAuth();
 
   const [searchTerm, setSearchTerm] = useState("");
-  const { ingredients, loading, deleteIngredient } = useIngredients(searchTerm);
+  const { ingredients, loading } = useIngredients(searchTerm);
 
-  // Pagination Logic
   const { currentItems, currentPage, setCurrentPage, totalPages } =
     usePagination(ingredients, ITEMS_PER_PAGE);
-
-  const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this ingredient?")) {
-      const result = await deleteIngredient(id);
-      if (!result.success) alert("Error deleting ingredient: " + result.error);
-    }
-  };
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
@@ -68,27 +59,16 @@ export default function IngredientsList() {
           </div>
         ) : (
           <>
-            <IngredientTable
-              items={currentItems}
-              isAdmin={!!user}
-              onEdit={(ing) =>
-                navigate(`/edit-ingredient/${ing.id}`, {
-                  state: { ingredient: ing },
-                })
-              }
-              onDelete={handleDelete}
-            />
+            <IngredientTable items={currentItems} />
 
-            {ingredients.length > 0 ? (
-              <div className="mt-8 flex justify-center">
+            {totalPages > 1 && (
+              <div className="mt-12 flex justify-center">
                 <Pagination
                   currentPage={currentPage}
                   totalPages={totalPages}
                   onPageChange={setCurrentPage}
                 />
               </div>
-            ) : (
-              <EmptyState title="Not Found" message="No ingredients found" />
             )}
           </>
         )}

@@ -1,134 +1,89 @@
-import React from "react";
 import { useNavigate } from "react-router-dom";
-import { recipes } from "../data/recipes.js";
-import { useMealPlanForm } from "../hooks/useMealPlanForm.js";
-import {
-  calculateEndDate,
-  generateShoppingList,
-} from "../utils/shoppingList.js";
+import { useAuth } from "../context/AuthContext";
 import Navigation from "../components/layout/Navigation.jsx";
 import FormInput from "../components/ui/FormInput.jsx";
-import FormSelect from "../components/ui/FormSelect.jsx";
 import BackButton from "../components/ui/BackButton.jsx";
+import { MealPlanDay } from "../components/plan/MealPlanDay.jsx";
+import { useCreatePlanLogic } from "../hooks/useCreatePlanLogic.js";
 
 export default function CreatePlan() {
+  const { user } = useAuth();
   const navigate = useNavigate();
-  const {
-    formData,
-    updateField,
-    addRecipeSlot,
-    updateRecipeSlot,
-    removeRecipeSlot,
-  } = useMealPlanForm();
-
-  const handleSave = (e) => {
-    e.preventDefault();
-
-    const validIds = formData.recipeIds.filter((id) => id !== "");
-
-    if (!formData.planName || !formData.startDate || validIds.length === 0) {
-      alert("Please fill in all fields and choose at least one recipe.");
-      return;
-    }
-
-    const shoppingList = generateShoppingList(validIds);
-
-    const newPlan = {
-      ...formData,
-      recipeIds: validIds,
-      period: `${formData.startDate} - ${calculateEndDate(formData.startDate)}`,
-      shoppingList,
-    };
-
-    console.log("Saving Plan:", newPlan);
-    navigate("/plans");
-  };
-
-  const recipeOptions = recipes.map((r) => ({ value: r.id, label: r.title }));
+  const { recipes, saving, form, handleSave } = useCreatePlanLogic(
+    user,
+    navigate
+  );
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
       <Navigation />
-      <div className="max-w-3xl mx-auto px-4 py-10">
+      <div className="max-w-4xl mx-auto px-4 py-10">
         <BackButton className="mb-6" />
 
-        <div className="bg-white rounded-[2.5rem] shadow-xl border border-gray-100 overflow-hidden">
-          <header className="p-8 md:p-12 border-b border-gray-50 bg-gray-50/30">
-            <h1 className="text-4xl font-black text-gray-900 tracking-tight">
-              Create Plan
+        <form onSubmit={handleSave} className="space-y-8">
+          {/* Header Card */}
+          <div className="bg-white rounded-[2.5rem] p-8 md:p-12 shadow-xl border border-gray-100">
+            <h1 className="text-4xl font-black text-gray-900 mb-8">
+              Create New Plan
             </h1>
-            <p className="text-gray-500 font-medium">
-              Schedule your meals and auto-generate a shopping list.
-            </p>
-          </header>
 
-          <form onSubmit={handleSave} className="p-8 md:p-12 space-y-10">
-            {/* Basic Info */}
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="space-y-6">
               <FormInput
-                label="Plan Name"
-                placeholder="e.g. Summer Shred"
-                value={formData.planName}
-                onChange={(e) => updateField("planName", e.target.value)}
+                label="Plan Title"
+                value={form.title}
+                onChange={(e) => form.setTitle(e.target.value)}
+                placeholder="e.g. 7-Day Clean Eating"
               />
-              <FormInput
-                label="Start Date"
-                type="date"
-                value={formData.startDate}
-                onChange={(e) => updateField("startDate", e.target.value)}
-              />
-            </div>
-
-            {/* Recipe Selection Section */}
-            <div className="space-y-4">
-              <label className="text-sm font-black text-gray-700 uppercase tracking-wider ml-1">
-                Selected Recipes
-              </label>
-
-              <div className="space-y-3">
-                {formData.recipeIds.map((id, index) => (
-                  <div key={index} className="flex gap-3 items-end group">
-                    <div className="flex-grow">
-                      <FormSelect
-                        value={id}
-                        onChange={(e) =>
-                          updateRecipeSlot(index, e.target.value)
-                        }
-                        options={recipeOptions}
-                        placeholder="Choose a recipe..."
-                      />
-                    </div>
-                    {formData.recipeIds.length > 1 && (
-                      <button
-                        type="button"
-                        onClick={() => removeRecipeSlot(index)}
-                        className="mb-1 p-4 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-2xl transition-all"
-                      >
-                        ✕
-                      </button>
-                    )}
-                  </div>
-                ))}
+              <div className="space-y-2">
+                <label className="text-sm font-black text-gray-700 uppercase ml-1">
+                  Description
+                </label>
+                <textarea
+                  className="w-full p-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-green-500 outline-none h-24 resize-none"
+                  value={form.description}
+                  onChange={(e) => form.setDescription(e.target.value)}
+                  placeholder="What is the goal of this plan?"
+                />
               </div>
-
-              <button
-                type="button"
-                onClick={addRecipeSlot}
-                className="w-full py-4 border-2 border-dashed border-gray-200 rounded-2xl text-gray-400 font-bold hover:border-green-500 hover:text-green-600 hover:bg-green-50 transition-all"
-              >
-                + Add Another Recipe
-              </button>
+              <FormInput
+                label=" Make this plan public for the community"
+                type="checkbox"
+                checked={form.isPublic}
+                onChange={(e) => form.setIsPublic(e.target.checked)}
+                className="flex items-center gap-3 cursor-pointer p-4 bg-gray-50 rounded-2xl"
+              />
             </div>
+          </div>
 
-            {/* Submit */}
+          {/* Days Section */}
+          <div className="space-y-6">
+            {form.days.map((day, idx) => (
+              <MealPlanDay
+                key={idx}
+                day={day}
+                dayIdx={idx}
+                recipes={recipes}
+                onMealChange={form.updateMeal}
+              />
+            ))}
+
             <button
-              type="submit"
-              className="w-full py-5 bg-gray-900 text-white font-black text-xl rounded-3xl hover:bg-black transition-all shadow-xl shadow-gray-200"
+              type="button"
+              onClick={form.addDay}
+              className="w-full py-6 border-4 border-dashed border-gray-200 rounded-[2.5rem] text-gray-400 text-xl font-black hover:border-green-500 hover:text-green-600 hover:bg-green-50 transition-all"
             >
-              Generate Plan & List
+              + Add Day {form.days.length + 1}
             </button>
-          </form>
-        </div>
+          </div>
+
+          <button
+            type="submit"
+            disabled={saving}
+            className="w-full py-6 bg-gray-900 text-white font-black text-2xl rounded-[2.5rem] hover:bg-black transition-all shadow-2xl disabled:bg-gray-400"
+          >
+            {saving ? "Creating Plan..." : "Save Plan & Shopping List"}
+          </button>
+        </form>
       </div>
     </div>
   );

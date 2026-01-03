@@ -41,7 +41,7 @@ export default function RecipeForm() {
     const fullIngredients = formData.recipeIngredients
       .map((ri) => {
         const fullInfo = availableIngredients.find(
-          (ai) => ai.id === parseInt(ri.ingredient_id)
+          (ai) => ai.id === ri.ingredient_id
         );
         return { amount: ri.amount, ingredients: fullInfo };
       })
@@ -108,7 +108,7 @@ export default function RecipeForm() {
                   key={i}
                   index={i}
                   data={s}
-                  ingredientsList={availableIngredients} // Šaljemo listu svih sastojaka
+                  ingredientsList={availableIngredients}
                   onUpdate={updateIngredient}
                   onRemove={removeIngredient}
                   canRemove={formData.recipeIngredients.length > 1}

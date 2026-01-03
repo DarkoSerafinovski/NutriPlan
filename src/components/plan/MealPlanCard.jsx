@@ -1,46 +1,40 @@
-import React from "react";
-
-const MealPlanCard = ({ plan, onClick }) => {
+export default function MealPlanCard({ plan, onClick }) {
+  console.log(plan);
   return (
     <div
       onClick={onClick}
-      className="group bg-white rounded-[2rem] p-6 shadow-xl shadow-gray-200/50 border border-gray-100 hover:border-green-500 transition-all cursor-pointer flex flex-col justify-between"
+      className="bg-white rounded-[2.5rem] p-8 border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer group"
     >
-      <div>
-        <div className="flex justify-between items-start mb-4">
-          <div className="p-3 bg-green-50 rounded-2xl text-2xl group-hover:bg-green-100 transition-colors">
-            🗓️
-          </div>
-          <span className="text-xs font-black uppercase tracking-widest text-gray-400 bg-gray-50 px-3 py-1 rounded-full">
-            {plan.period}
-          </span>
-        </div>
-
-        <h2 className="text-2xl font-black text-gray-900 mb-2 leading-tight group-hover:text-green-600 transition-colors">
-          {plan.planName}
-        </h2>
-
-        <p className="text-gray-500 font-medium text-sm line-clamp-2">
-          {plan.description ||
-            "A balanced nutritional guide for your health goals."}
-        </p>
+      <div className="flex justify-between items-start mb-4">
+        <span className="bg-green-100 text-green-700 text-xs font-black px-4 py-1.5 rounded-full uppercase tracking-wider">
+          {plan.daysCount} Days
+        </span>
+        {plan.is_public && (
+          <span className="text-gray-400 text-xs font-bold italic">Public</span>
+        )}
       </div>
 
-      <div className="mt-6 pt-6 border-t border-gray-50 flex items-center justify-between">
-        <div className="flex flex-col">
-          <span className="text-[10px] font-black uppercase text-gray-400">
-            Recipes
+      <h3 className="text-2xl font-black text-gray-900 mb-2 group-hover:text-green-600 transition-colors">
+        {plan.title}
+      </h3>
+
+      <p className="text-gray-500 text-sm leading-relaxed mb-6 line-clamp-2">
+        {plan.description || "No description provided for this meal plan."}
+      </p>
+
+      <div className="pt-6 border-t border-gray-50 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <span className="text-gray-900 font-black text-lg">
+            {plan.totalMeals}
           </span>
-          <span className="font-bold text-gray-900">
-            {plan.recipeIds.length} Meals
+          <span className="text-gray-400 text-sm font-bold uppercase">
+            Total Meals
           </span>
         </div>
-        <div className="h-10 w-10 rounded-full bg-gray-900 flex items-center justify-center text-white group-hover:bg-green-600 transition-colors shadow-lg">
-          <span className="text-xl">→</span>
+        <div className="w-10 h-10 bg-gray-900 rounded-full flex items-center justify-center text-white group-hover:bg-green-600 transition-colors">
+          →
         </div>
       </div>
     </div>
   );
-};
-
-export default MealPlanCard;
+}

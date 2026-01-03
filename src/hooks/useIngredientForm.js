@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { ingredients } from "../data/ingredients.js";
 import { supabase } from "../supabaseClient.js";
 
 const initialFormState = {

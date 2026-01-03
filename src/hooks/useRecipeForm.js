@@ -2,24 +2,18 @@ import { useState, useEffect } from "react";
 import { supabase } from "../supabaseClient";
 import { useAuth } from "../context/AuthContext";
 
-const emptyForm = {
+const getEmptyForm = () => ({
   title: "",
   mealType: "lunch",
   prepTime: 30,
   instructions: "",
-  recipeIngredients: [{ ingredient_id: "", amount: 100 }],
-};
+  recipeIngredients: [{ ingredient_id: "", amount: 0 }],
+});
 
 export function useRecipeForm(id) {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({
-    title: "",
-    mealType: "lunch",
-    prepTime: 30,
-    instructions: "",
-    recipeIngredients: [{ ingredient_id: "", amount: 0 }],
-  });
+  const [formData, setFormData] = useState(getEmptyForm());
 
   const isEditMode = !!id;
 
@@ -31,6 +25,8 @@ export function useRecipeForm(id) {
           .select("*, recipe_ingredients(*)")
           .eq("id", id)
           .single();
+
+        if (error) throw error;
 
         if (data) {
           setFormData({
@@ -47,7 +43,7 @@ export function useRecipeForm(id) {
       };
       fetchRecipe();
     } else if (!id) {
-      setFormData(emptyForm);
+      setFormData(getEmptyForm());
     }
   }, [id]);
 

@@ -9,6 +9,9 @@ const IngredientTableRow = ({ ingredient }) => {
           {ingredient.categories?.name || "Uncategorized"}
         </span>
       </td>
+      <td className="p-6 text-center">
+        <span className="font-black text-gray-900">{ingredient.calories}</span>
+      </td>
       <td className="p-6 text-center font-medium text-gray-600">
         {ingredient.fats}g
       </td>
@@ -18,9 +21,7 @@ const IngredientTableRow = ({ ingredient }) => {
       <td className="p-6 text-center font-medium text-gray-600">
         {ingredient.carbs}g
       </td>
-      <td className="p-6 text-center">
-        <span className="font-black text-gray-900">{ingredient.calories}</span>
-      </td>
+
       <td className="p-6 text-gray-400 font-bold text-sm">{ingredient.unit}</td>
     </tr>
   );

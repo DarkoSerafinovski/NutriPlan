@@ -32,7 +32,6 @@ export const IngredientList = ({ recipeIngredients }) => {
   );
 };
 
-// 2. Komponenta za korake pripreme
 export const PreparationSteps = ({ instructions }) => {
   return (
     <div className="md:col-span-3 bg-gray-50/50 p-8 rounded-3xl border border-gray-100">

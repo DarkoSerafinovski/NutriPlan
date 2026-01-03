@@ -5,6 +5,7 @@ import { calculateNutrition } from "../utils/nutrition";
 
 const initialState = {
   searchName: "",
+  onlyMyRecipes: false,
   selectedTypes: [],
   timeRange: null,
   calorieRange: null,
@@ -14,6 +15,11 @@ function filterReducer(state, action) {
   switch (action.type) {
     case "SET_SEARCH":
       return { ...state, searchName: action.payload };
+    case "TOGGLE_MY_RECIPES":
+      return {
+        ...state,
+        onlyMyRecipes: !state.onlyMyRecipes,
+      };
     case "TOGGLE_TYPE":
       const newTypes = state.selectedTypes.includes(action.payload)
         ? state.selectedTypes.filter((t) => t !== action.payload)
@@ -34,16 +40,13 @@ export default function useRecipesLogic({ onlyFavorites }) {
   const { user } = useAuth();
   const [state, dispatch] = useReducer(filterReducer, initialState);
 
-  // Lokalni state za recepte iz baze
   const [rawRecipes, setRawRecipes] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
-  // 1. Fetch recepata sa sastojcima i favoritima
   useEffect(() => {
     const fetchRecipes = async () => {
       setLoading(true);
       try {
-        // Povlačimo recepte + njihove sastojke + podatke o tim sastojcima (JOIN)
         let query = supabase.from("recipes").select(`
             *,
             recipe_ingredients (
@@ -56,15 +59,11 @@ export default function useRecipesLogic({ onlyFavorites }) {
         const { data, error } = await query;
         if (error) throw error;
 
-        // Mapiramo podatke da odgovaraju tvom formatu i računamo nutriciju
         const formatted = data.map((recipe) => {
-          // Provera da li je trenutni korisnik označio ovaj recept kao favorit
           const isFavorite = recipe.favorites?.some(
             (f) => f.user_id === user?.id
           );
 
-          // Pripremamo sastojke za tvoj calculateNutrition utility
-          // On verovatno očekuje niz sastojaka sa poljima iz tabele ingredients
           const nutrition = calculateNutrition(recipe.recipe_ingredients);
 
           return {
@@ -85,12 +84,15 @@ export default function useRecipesLogic({ onlyFavorites }) {
     fetchRecipes();
   }, [user, onlyFavorites]);
 
-  // 2. Filtriranje (ostaje useMemo, ali nad rawRecipes)
   const filteredRecipes = useMemo(() => {
     let results = [...rawRecipes];
 
     if (onlyFavorites) {
       results = results.filter((r) => r.isFavorite === true);
+    }
+
+    if (state.onlyMyRecipes && user) {
+      results = results.filter((r) => r.user_id === user.id);
     }
 
     if (state.searchName) {
@@ -120,7 +122,7 @@ export default function useRecipesLogic({ onlyFavorites }) {
     }
 
     return results;
-  }, [state, rawRecipes, onlyFavorites]);
+  }, [state, rawRecipes, onlyFavorites, user]);
 
   return {
     state,

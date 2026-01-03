@@ -1,38 +1,49 @@
 import { useState } from "react";
 
-export const useMealPlanForm = () => {
-  const [formData, setFormData] = useState({
-    planName: "",
-    startDate: "",
-    recipeIds: [""],
-  });
+export function useMealPlanForm() {
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [isPublic, setIsPublic] = useState(false);
+  const [days, setDays] = useState([
+    {
+      day_number: 1,
+      breakfast_id: null,
+      snack1_id: null,
+      lunch_id: null,
+      snack2_id: null,
+      dinner_id: null,
+    },
+  ]);
 
-  const updateField = (field, value) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+  const addDay = () => {
+    setDays((prev) => [
+      ...prev,
+      {
+        day_number: prev.length + 1,
+        breakfast_id: null,
+        snack1_id: null,
+        lunch_id: null,
+        snack2_id: null,
+        dinner_id: null,
+      },
+    ]);
   };
 
-  const addRecipeSlot = () => {
-    setFormData((prev) => ({ ...prev, recipeIds: [...prev.recipeIds, ""] }));
-  };
-
-  const updateRecipeSlot = (index, id) => {
-    const newIds = [...formData.recipeIds];
-    newIds[index] = id;
-    updateField("recipeIds", newIds);
-  };
-
-  const removeRecipeSlot = (index) => {
-    updateField(
-      "recipeIds",
-      formData.recipeIds.filter((_, i) => i !== index)
-    );
+  const updateMeal = (dayIdx, mealKey, value) => {
+    const newDays = [...days];
+    newDays[dayIdx][mealKey] = value === "" ? null : value;
+    setDays(newDays);
   };
 
   return {
-    formData,
-    updateField,
-    addRecipeSlot,
-    updateRecipeSlot,
-    removeRecipeSlot,
+    title,
+    setTitle,
+    description,
+    setDescription,
+    isPublic,
+    setIsPublic,
+    days,
+    addDay,
+    updateMeal,
   };
-};
+}

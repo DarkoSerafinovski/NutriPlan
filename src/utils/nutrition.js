@@ -21,8 +21,8 @@ export const calculateNutrition = (recipeIngredients) => {
 
   return {
     calories: Math.round(totals.calories),
-    proteins: Number(totals.proteins.toFixed(2)),
-    fats: Number(totals.fats.toFixed(2)),
-    carbs: Number(totals.carbs.toFixed(2)),
+    proteins: Math.round(totals.proteins),
+    fats: Math.round(totals.fats),
+    carbs: Math.round(totals.carbs),
   };
 };

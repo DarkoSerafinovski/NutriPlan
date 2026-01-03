@@ -63,15 +63,13 @@ export default function AllRecipes({ onlyFavorites = false }) {
               </div>
             )}
 
-            {totalPages > 1 && (
-              <div className="mt-12 flex justify-center">
-                <Pagination
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  onPageChange={setCurrentPage}
-                />
-              </div>
-            )}
+            <div className="mt-12 flex justify-center">
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={setCurrentPage}
+              />
+            </div>
           </div>
         </div>
       </main>

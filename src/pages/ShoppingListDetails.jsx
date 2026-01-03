@@ -1,57 +1,35 @@
-import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { shoppingLists } from "../data/shoppingLists.js";
-import { ingredients } from "../data/ingredients.js";
 import Navigation from "../components/layout/Navigation.jsx";
 import BackButton from "../components/ui/BackButton.jsx";
 import EmptyState from "../components/ui/EmptyState.jsx";
 import ProgressBar from "../components/ui/ProgressBar.jsx";
-import { mealPlans } from "../data/mealPlans.js";
 import { generateShoppingPDF } from "../utils/generatePDF.js";
+import { useShoppingListDetails } from "../hooks/useShoppingListDetails.js";
+import Loader from "../components/ui/Loader.jsx";
 
 export default function ShoppingListDetails() {
   const { planId } = useParams();
   const navigate = useNavigate();
 
-  const list = shoppingLists.find(
-    (l) => l.planId.toString() === planId?.toString()
-  );
-
-  const getPlanName = (planId) => {
-    const plan = mealPlans.find((p) => p.id.toString() === planId.toString());
-    return plan ? plan.planName : `Plan #${planId}`;
-  };
-
-  const [checkedItems, setCheckedItems] = useState({});
-
-  const checkedCount = Object.values(checkedItems).filter(Boolean).length;
-
-  const toggleItem = (id) => {
-    setCheckedItems((prev) => ({ ...prev, [id]: !prev[id] }));
-  };
+  const { listData, ingredients, checkedItems, loading, toggleItem } =
+    useShoppingListDetails(planId);
 
   const handleDownload = () => {
-    generateShoppingPDF(list, ingredients);
+    if (!listData || ingredients.length === 0) return;
+    generateShoppingPDF(listData, ingredients, listData.meal_plans?.title);
   };
 
-  if (!list) {
+  if (loading) return <Loader text="Loading your list..." />;
+
+  if (!listData) {
     return (
-      <>
-        <Navigation />
-        <div className="max-w-3xl mx-auto px-4 py-20">
-          <EmptyState
-            title="List not found"
-            message="We couldn't find the shopping list for this plan."
-            icon="❌"
-            actionLabel="Back to Lists"
-            onAction={() => navigate("/shopping-lists")}
-          />
-        </div>
-      </>
+      <EmptyState
+        title="List not found"
+        onAction={() => navigate("/shopping-lists")}
+        icon="❌"
+      />
     );
   }
-
-  const currentItems = list.items || [];
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
@@ -62,84 +40,67 @@ export default function ShoppingListDetails() {
           <BackButton />
           <div className="flex gap-2">
             <button
+              className="text-sm font-black text-gray-600 bg-white border border-gray-200 px-4 py-2 rounded-xl"
               onClick={handleDownload}
-              className="flex items-center gap-2 text-sm font-black text-gray-600 hover:text-gray-700 bg-white border border-gray-200 px-4 py-2 rounded-xl shadow-sm transition-all active:scale-95"
             >
               📥 Export PDF
-            </button>
-            <button
-              onClick={() => navigate(`/edit-list/${planId}`)}
-              className="text-sm font-black text-green-600 hover:text-green-700 bg-green-50 px-4 py-2 rounded-xl transition-colors"
-            >
-              ✏️ Edit List
             </button>
           </div>
         </div>
 
         <header className="mb-10">
           <h1 className="text-4xl font-black text-gray-900 tracking-tight">
-            Shopping List
+            Grocery List
           </h1>
-          <p className="text-gray-500 font-medium mt-4">
-            {getPlanName(planId)}
+          <p className="text-green-600 font-bold mt-2">
+            {listData.meal_plans?.title}
           </p>
         </header>
 
-        <div className="bg-white rounded-[2.5rem] shadow-xl shadow-gray-200/50 border border-gray-100 overflow-hidden">
+        <div className="bg-white rounded-[2.5rem] shadow-xl border border-gray-100 overflow-hidden">
           <div className="p-6 md:p-10 space-y-3">
-            {currentItems.map((item) => {
-              const ingData = ingredients.find(
-                (ing) => ing.id === item.ingredientId
-              );
-
-              if (!ingData) return null;
-
-              const isChecked = !!checkedItems[item.ingredientId];
+            {listData.items.map((item) => {
+              const ing = ingredients.find((i) => i.id === item.ingredient_id);
+              const isChecked = checkedItems.includes(item.ingredient_id);
 
               return (
                 <div
-                  key={item.ingredientId}
-                  onClick={() => toggleItem(item.ingredientId)}
-                  className={`flex items-center justify-between p-5 rounded-2xl border transition-all cursor-pointer group ${
+                  key={item.ingredient_id}
+                  onClick={() => toggleItem(item.ingredient_id)}
+                  className={`flex items-center justify-between p-5 rounded-2xl border transition-all cursor-pointer ${
                     isChecked
-                      ? "bg-gray-50 border-gray-100"
-                      : "bg-white border-gray-50 hover:border-green-200"
+                      ? "bg-gray-50 border-transparent opacity-60"
+                      : "bg-white border-gray-100 hover:border-green-200"
                   }`}
                 >
                   <div className="flex items-center gap-4">
                     <div
-                      className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
+                      className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
                         isChecked
                           ? "bg-green-500 border-green-500"
-                          : "border-gray-300 group-hover:border-green-400"
+                          : "border-gray-300"
                       }`}
                     >
                       {isChecked && (
                         <span className="text-white text-[10px]">✓</span>
                       )}
                     </div>
-
                     <span
-                      className={`text-lg font-bold transition-all ${
+                      className={`text-lg font-bold ${
                         isChecked
-                          ? "text-gray-400 line-through"
+                          ? "line-through text-gray-400"
                           : "text-gray-800"
                       }`}
                     >
-                      {ingData.name}
+                      {ing?.name || "Loading..."}
                     </span>
                   </div>
-
-                  <div className="flex items-baseline gap-1">
-                    <span
-                      className={`text-xl font-black ${
-                        isChecked ? "text-gray-400" : "text-gray-900"
-                      }`}
-                    >
+                  <div className="text-right">
+                    <span className="text-xl font-black block leading-none">
                       {item.amount}
                     </span>
-                    <span className="text-xs font-black text-gray-400 uppercase">
-                      {ingData.unit}
+                    <span className="text-[10px] font-black text-gray-400 uppercase">
+                      {ing?.unit}
                     </span>
                   </div>
                 </div>
@@ -147,12 +108,16 @@ export default function ShoppingListDetails() {
             })}
           </div>
 
-          <div className="px-10 py-6 bg-gray-50 border-t border-gray-100">
+          <div className="px-10 py-8 bg-gray-50 border-t border-gray-100">
             <ProgressBar
-              label="Items Checked"
-              current={checkedCount}
-              total={currentItems.length}
+              current={checkedItems.length}
+              total={listData.items.length}
             />
+            <p className="text-center mt-4 text-xs font-black text-gray-400 uppercase tracking-widest">
+              {checkedItems.length === listData.items.length
+                ? "All items collected! 🎉"
+                : "Keep going!"}
+            </p>
           </div>
         </div>
       </main>

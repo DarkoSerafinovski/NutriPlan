@@ -1,6 +1,6 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import ProtectedRoute from "./components/ProtectedRoute.jsx";
+import ProtectedRoute from "./components/ui/ProtectedRoute.jsx";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import AllRecipes from "./pages/AllRecipes";
@@ -8,12 +8,11 @@ import RecipeDetails from "./pages/RecipeDetails";
 import RecipeForm from "./pages/RecipeForm";
 import IngredientsList from "./pages/IngredientsList.jsx";
 import IngredientForm from "./pages/IngredientsForm";
-import MyPlans from "./pages/MyPlans";
 import PlanDetails from "./pages/PlanDetails";
 import CreatePlan from "./pages/CreatePlan";
 import ShoppingLists from "./pages/ShoppingLists";
 import ShoppingListDetails from "./pages/ShoppingListDetails";
-import EditList from "./pages/EditList.jsx";
+import Plans from "./pages/Plans.jsx";
 
 function App() {
   return (
@@ -35,7 +34,7 @@ function App() {
               path="/favorites"
               element={<AllRecipes onlyFavorites={true} />}
             />
-            <Route path="/plans" element={<MyPlans />} />
+            <Route path="/plans" element={<Plans />} />
             <Route path="/plan/:id" element={<PlanDetails />} />
             <Route path="/create-plan" element={<CreatePlan />} />
             <Route path="/shopping-lists" element={<ShoppingLists />} />{" "}
@@ -43,7 +42,6 @@ function App() {
               path="/shopping-list/:planId"
               element={<ShoppingListDetails />}
             />
-            <Route path="/edit-list/:planId" element={<EditList />} />
           </Route>
         </Routes>
       </div>

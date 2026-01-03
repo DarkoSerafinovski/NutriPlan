@@ -1,4 +1,7 @@
 import React from "react";
+import { useAuth } from "../../context/AuthContext";
+import FormInput from "../ui/FormInput";
+import { type } from "@testing-library/user-event/dist/type";
 
 const mealTypes = ["Breakfast", "Lunch", "Snack", "Dinner", "Dessert"];
 
@@ -15,30 +18,40 @@ const calorieFilters = [
 ];
 
 const FilterSidebar = ({ state, dispatch }) => {
+  const { user } = useAuth();
+
   return (
     <aside className="w-full lg:w-64 flex flex-col gap-8 bg-white p-6 rounded-2xl shadow-sm border border-gray-100 h-fit">
+      {user && (
+        <div>
+          <h3 className="text-lg font-bold text-gray-800 mb-4 border-b pb-2">
+            Visibility
+          </h3>
+          <div className="flex flex-col gap-3">
+            <FormInput
+              type="toggle"
+              label="My Recipes Only"
+              checked={state.onlyMyRecipes}
+              onChange={() => dispatch({ type: "TOGGLE_MY_RECIPES" })}
+            />
+          </div>
+        </div>
+      )}
       <div>
         <h3 className="text-lg font-bold text-gray-800 mb-4 border-b pb-2">
           Meal Type
         </h3>
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-1">
           {mealTypes.map((type) => (
-            <label
+            <FormInput
               key={type}
-              className="flex items-center gap-3 cursor-pointer group"
-            >
-              <input
-                type="checkbox"
-                className="w-5 h-5 rounded border-gray-300 text-green-600 focus:ring-green-500 cursor-pointer"
-                checked={state.selectedTypes.includes(type)}
-                onChange={() =>
-                  dispatch({ type: "TOGGLE_TYPE", payload: type })
-                }
-              />
-              <span className="text-gray-600 group-hover:text-green-700 transition-colors">
-                {type}
-              </span>
-            </label>
+              label={type}
+              type="checkbox"
+              checked={state.selectedTypes.includes(type.toLowerCase())}
+              onChange={() =>
+                dispatch({ type: "TOGGLE_TYPE", payload: type.toLowerCase() })
+              }
+            />
           ))}
         </div>
       </div>
@@ -47,34 +60,25 @@ const FilterSidebar = ({ state, dispatch }) => {
         <h3 className="text-lg font-bold text-gray-800 mb-4 border-b pb-2">
           Prep Time
         </h3>
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-2">
           {timeFilters.map((filter) => (
-            <label
+            <FormInput
               key={filter.label}
-              className="flex items-center gap-3 cursor-pointer group"
-            >
-              <input
-                type="radio"
-                name="time"
-                className="w-5 h-5 border-gray-300 text-green-600 focus:ring-green-500 cursor-pointer"
-                checked={state.timeRange?.label === filter.label}
-                onChange={() => dispatch({ type: "SET_TIME", payload: filter })}
-              />
-              <span className="text-gray-600 group-hover:text-green-700 transition-colors">
-                {filter.label}
-              </span>
-            </label>
-          ))}
-          <label className="flex items-center gap-3 cursor-pointer">
-            <input
-              type="radio"
+              label={filter.label}
               name="time"
-              className="w-5 h-5 border-gray-300 text-green-600 focus:ring-green-500"
-              checked={state.timeRange === null}
-              onChange={() => dispatch({ type: "SET_TIME", payload: null })}
+              type="radio"
+              checked={state.timeRange?.label === filter.label}
+              onChange={() => dispatch({ type: "SET_TIME", payload: filter })}
             />
-            <span className="text-gray-400">All Times</span>
-          </label>
+          ))}
+
+          <FormInput
+            label="All Times"
+            name="time"
+            type="radio"
+            checked={state.timeRange === null}
+            onChange={() => dispatch({ type: "SET_TIME", payload: null })}
+          />
         </div>
       </div>
 
@@ -82,36 +86,28 @@ const FilterSidebar = ({ state, dispatch }) => {
         <h3 className="text-lg font-bold text-gray-800 mb-4 border-b pb-2">
           Calories
         </h3>
-        <div className="flex flex-col gap-3">
+
+        <div className="flex flex-col gap-2">
           {calorieFilters.map((filter) => (
-            <label
+            <FormInput
               key={filter.label}
-              className="flex items-center gap-3 cursor-pointer group"
-            >
-              <input
-                type="radio"
-                name="calories"
-                className="w-5 h-5 border-gray-300 text-green-600 focus:ring-green-500 cursor-pointer"
-                checked={state.calorieRange?.label === filter.label}
-                onChange={() =>
-                  dispatch({ type: "SET_CALORIES", payload: filter })
-                }
-              />
-              <span className="text-gray-600 group-hover:text-green-700 transition-colors">
-                {filter.label}
-              </span>
-            </label>
-          ))}
-          <label className="flex items-center gap-3 cursor-pointer">
-            <input
-              type="radio"
+              label={filter.label}
               name="calories"
-              className="w-5 h-5 border-gray-300 text-green-600 focus:ring-green-500"
-              checked={state.calorieRange === null}
-              onChange={() => dispatch({ type: "SET_CALORIES", payload: null })}
+              type="radio"
+              checked={state.calorieRange?.label === filter.label}
+              onChange={() =>
+                dispatch({ type: "SET_CALORIES", payload: filter })
+              }
             />
-            <span className="text-gray-400">All Calories</span>
-          </label>
+          ))}
+
+          <FormInput
+            label="All Calories"
+            name="calories"
+            type="radio"
+            checked={state.calorieRange === null}
+            onChange={() => dispatch({ type: "SET_CALORIES", payload: null })}
+          />
         </div>
       </div>
 

@@ -3,13 +3,64 @@ const FormInput = ({
   name,
   type = "text",
   value,
+  checked,
   onChange,
   placeholder,
   required = false,
   className = "",
   classNameLabel = "font-black text-gray-700 uppercase ml-1",
   icon,
+  ...props
 }) => {
+  if (type === "toggle") {
+    return (
+      <label
+        className={`flex items-center gap-3 cursor-pointer group ${className}`}
+      >
+        <div className="relative inline-flex items-center cursor-pointer">
+          <input
+            type="checkbox"
+            name={name}
+            className="sr-only peer"
+            checked={checked}
+            onChange={onChange}
+            required={required}
+            {...props}
+          />
+          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
+        </div>
+        {label && (
+          <span className="text-gray-700 font-medium group-hover:text-green-700 transition-colors">
+            {label} {required && <span className="text-red-500">*</span>}
+          </span>
+        )}
+      </label>
+    );
+  }
+  const isCheckOrRadio = type === "checkbox" || type === "radio";
+
+  if (isCheckOrRadio) {
+    return (
+      <label
+        className={`flex items-center gap-3 cursor-pointer p-1 transition-all ${className}`}
+      >
+        <input
+          type={type}
+          name={name}
+          checked={checked}
+          onChange={onChange}
+          required={required}
+          className="w-5 h-5 accent-green-600 cursor-pointer"
+          {...props}
+        />
+        {label && (
+          <span className="text-gray-600 group-hover:text-green-700 transition-colors">
+            {label} {required && <span className="text-red-500">*</span>}
+          </span>
+        )}
+      </label>
+    );
+  }
   return (
     <div className={`space-y-2 ${className}`}>
       {label && (

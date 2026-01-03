@@ -5,7 +5,7 @@ export const usePagination = (items, itemsPerPage = 10) => {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [items.length]);
+  }, [items.length, itemsPerPage]);
 
   const totalPages = Math.ceil(items.length / itemsPerPage);
 

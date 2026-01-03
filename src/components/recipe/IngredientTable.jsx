@@ -10,10 +10,10 @@ const IngredientTable = ({ items }) => {
   const headers = [
     "Ingredient",
     "Category",
-    "Fats",
-    "Prot.",
-    "Carbs",
     "Calories",
+    "Fats",
+    "Proteins",
+    "Carbs",
     "Unit",
   ];
 

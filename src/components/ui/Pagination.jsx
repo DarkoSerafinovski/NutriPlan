@@ -72,7 +72,6 @@ export default function Pagination({ currentPage, totalPages, onPageChange }) {
         )}
       </div>
 
-      {/* Dugme Sledeća */}
       <button
         onClick={() => onPageChange(Math.min(currentPage + 1, totalPages))}
         disabled={currentPage === totalPages}
