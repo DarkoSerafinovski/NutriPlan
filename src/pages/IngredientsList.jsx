@@ -42,7 +42,7 @@ export default function IngredientsList() {
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-64"
             />
-            {user?.email === "darkoserafinovski@gmail.com" && (
+            {user && (
               <button
                 onClick={() => navigate("/add-ingredient")}
                 className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-2xl transition-all shadow-lg shadow-green-200"
